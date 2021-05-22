@@ -39,6 +39,70 @@ typedef struct {
 
 }SPI_Handle_t;
 
+/*
+ * @SPI_DeviceMode
+ */
+
+#define SPI_DEVICE_MODE_MASTER		1
+#define SPI_DEVICE_MODE_SLAVE		0
+
+/*
+ * @SPI_BusConfig
+ */
+
+#define SPI_BUS_CONFIG_FD			1
+#define SPI_BUS_CONFIG_HD			2
+#define SPI_BUS_CONFIG_SIMPLEX_RX	3
+
+/*
+ * @SPI_SclkSpeed
+ */
+
+#define SPI_SCLK_SPEED_DIV2			0
+#define SPI_SCLK_SPEED_DIV4			1
+#define SPI_SCLK_SPEED_DIV8			2
+#define SPI_SCLK_SPEED_DIV16		3
+#define SPI_SCLK_SPEED_DIV32		4
+#define SPI_SCLK_SPEED_DIV64		5
+#define SPI_SCLK_SPEED_DIV128		6
+#define SPI_SCLK_SPEED_DIV256		7
+
+/*
+ * @SPI_DFF
+ */
+
+#define SPI_DFF_8BITS				0	//default value
+#define SPI_DFF_16BITS				1
+
+/*
+ * @SPI_CPOL
+ */
+
+#define SPI_CPOL_HIGH				1
+#define SPI_CPOL_LOW				0
+
+/*
+ * @SPI_CPHA
+ */
+
+#define SPI_CPHA_HIGH				1
+#define SPI_CPHA_LOW				0
+
+/*
+ * @SPI_SSM
+ */
+
+#define SPI_SSM_EN					1
+#define SPI_SSM_DI					0
+
+/*
+ * @SPI related status flag definition
+ */
+
+#define SPI_TXE_FLAG				( 1 << SPI_SR_TXE )
+#define SPI_RXNE_FLAG				( 1 << SPI_SR_RXNE )
+#define SPI_BUSY_FLAG				( 1 << SPI_SR_BSY )
+
 /************************************************************************************************************************
  * Define APIs (Functions) supported by this driver
  * For more information about the APIs check the function definitions
@@ -78,5 +142,7 @@ void	SPI_IRQHandling(SPI_Handle_t *pSPIHandle);
  * Other peripheral control APIs
  */
 
+void	SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t EnorDi);
+void	SPI_SSIConfig(SPI_RegDef_t *pSPIx, uint8_t EnorDi);
 
 #endif /* INC_STM32F407XX_SPI_DRIVER_H_ */
