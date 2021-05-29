@@ -35,7 +35,7 @@ typedef struct {
 
 	// First step is to define a pointer to hold the base address of the SPI peripheral
 	SPI_RegDef_t		*pSPIx;
-	SPI_Config_t		SPIConfig;
+	SPI_Config_t		SPI_Config;
 
 }SPI_Handle_t;
 
