@@ -25,7 +25,7 @@ typedef struct {
 	uint8_t SPI_CPHA;
 	uint8_t SPI_SSM;
 
-}SPI_Config_t;
+}SPIConfig_t;
 
 /*
  * Define the Handle Structure for a SPI peripheral
@@ -35,7 +35,13 @@ typedef struct {
 
 	// First step is to define a pointer to hold the base address of the SPI peripheral
 	SPI_RegDef_t		*pSPIx;
-	SPI_Config_t		SPI_Config;
+	SPIConfig_t			SPIConfig;
+	uint8_t				*pTxBuffer;		/* !< To store the app. Tx buffer address > */
+	uint8_t				*pRxBuffer;		/* !< To store the app. Rx buffer address > */
+	uint32_t			TxLen;			/* !< To store Tx buffer length > */
+	uint32_t			RxLen;			/* !< To store Rx buffer length > */
+	uint8_t				TxState;		/* !< To store Tx state > */
+	uint8_t				RxState;		/* !< To store Rx state > */
 
 }SPI_Handle_t;
 
@@ -103,6 +109,23 @@ typedef struct {
 #define SPI_RXNE_FLAG				( 1 << SPI_SR_RXNE )
 #define SPI_BUSY_FLAG				( 1 << SPI_SR_BSY )
 
+/*
+ * @SPI Application state definition
+ */
+
+#define SPI_READY					0
+#define SPI_BUSY_IN_RX				1
+#define SPI_BUSY_IN_TX				2
+
+/*
+ * @Possible SPI Application event definition
+ */
+
+#define SPI_EVENT_TX_CMPLT			0
+#define SPI_EVENT_RX_CMPLT			1
+#define SPI_EVENT_OVR_ERR			2
+#define SPI_EVENT_CRC_ERR			3
+
 /************************************************************************************************************************
  * Define APIs (Functions) supported by this driver
  * For more information about the APIs check the function definitions
@@ -130,6 +153,9 @@ void	SPI_DeInit(SPI_RegDef_t *pSPIx);
 void	SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t Len);
 void	SPI_ReceiveData(SPI_RegDef_t *pSPIx, uint8_t *pRxBuffer, uint32_t Len);
 
+uint8_t	SPI_SendData_IT(SPI_Handle_t *pSPIHandle, uint8_t *pTxBuffer, uint32_t Len);
+uint8_t	SPI_ReceiveData_IT(SPI_Handle_t *pSPIHandle, uint8_t *pRxBuffer, uint32_t Len);
+
 /*
  * IRQ Configuration and ISR Handling
  */
@@ -144,5 +170,16 @@ void	SPI_IRQHandling(SPI_Handle_t *pSPIHandle);
 
 void	SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t EnorDi);
 void	SPI_SSIConfig(SPI_RegDef_t *pSPIx, uint8_t EnorDi);
+uint8_t	SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint32_t FlagName);
+void	SPI_ClearOVRFlag(SPI_RegDef_t *pSPIx);
+void	SPI_CloseTransmission(SPI_Handle_t *pSPIHandle);
+void	SPI_CloseReception(SPI_Handle_t *pSPIHandle);
+
+/*
+ * Application Callback
+ */
+void SPI_ApplicationEventCallback(SPI_Handle_t *pSPIHandle, uint8_t AppEv);
+
+
 
 #endif /* INC_STM32F407XX_SPI_DRIVER_H_ */
