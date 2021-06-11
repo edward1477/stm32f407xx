@@ -104,6 +104,9 @@ void	SPI_Init(SPI_Handle_t *pSPIHandle) {
 	//6. Configure the CPHA
 	tempReg |= pSPIHandle->SPIConfig.SPI_CPHA << SPI_CR1_CPHA;
 
+	//7. Configure the SSM
+	tempReg |= pSPIHandle->SPIConfig.SPI_SSM << SPI_CR1_SSM;
+
 	// Write the final value of tempReg to actual SPI_CR1 register
 	pSPIHandle->pSPIx->CR1 = tempReg;
 
@@ -166,6 +169,7 @@ uint8_t	SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint32_t FlagName) {
  *
  * @Note              -  This is a blocking call or we are polling the TXE flag to set
  */
+
 void	SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t Len) {
 
 	//Use while loop to keep track of Len variable
@@ -187,11 +191,12 @@ void	SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t Len) {
 			//1. load the data to the DR
 			pSPIx->DR = *pTxBuffer;
 			Len--;
-			(uint8_t*)pTxBuffer++;
+			pTxBuffer++;
 		}
 
 	}
 }
+
 
 /*********************************************************************
  * @fn      		  - SPI_ReceiveData
@@ -348,7 +353,7 @@ void	SPI_IRQHandling(SPI_Handle_t *pSPIHandle) {
  */
 
 /*********************************************************************
- * @fn      		  - SPI_IRQHandling
+ * @fn      		  - SPI_PeripheralControl
  *
  * @brief             - This function enables or disables peripheral clock for the given GPIO port
  *
@@ -369,7 +374,7 @@ void	SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t EnorDi) {
 }
 
 /*********************************************************************
- * @fn      		  - SPI_IRQHandling
+ * @fn      		  - SPI_SSIConfig
  *
  * @brief             - This function enables or disables peripheral clock for the given GPIO port
  *
@@ -386,6 +391,27 @@ void	SPI_SSIConfig(SPI_RegDef_t *pSPIx, uint8_t EnorDi) {
 		pSPIx->CR1 |= (1 << SPI_CR1_SSI);
 	} else {
 		pSPIx->CR1 &= ~(1 << SPI_CR1_SSI);
+	}
+}
+
+/*********************************************************************
+ * @fn      		  - SPI_SSOEConfig
+ *
+ * @brief             - This function enables or disables peripheral clock for the given GPIO port
+ *
+ * @param[in]         - base address of the gpio peripheral
+ * @param[in]         - ENABLE or DISABLE macros
+ * @param[in]         -
+ *
+ * @return            -  none
+ *
+ * @Note              -  none
+ */
+void	SPI_SSOEConfig(SPI_RegDef_t *pSPIx, uint8_t EnorDi) {
+	if (EnorDi == ENABLE) {
+		pSPIx->CR2 |= (1 << SPI_CR2_SSOE);
+	} else {
+		pSPIx->CR2 &= ~(1 << SPI_CR2_SSOE);
 	}
 }
 

@@ -6,7 +6,7 @@
  */
 
 #include "stm32f407xx.h"
-#include "stm32f07xx_gpio_driver.h" /*This code also could be happened at the end of stm32f407xx.h file */
+#include "stm32f407xx_gpio_driver.h" /*This code also could be happened at the end of stm32f407xx.h file */
 
 void delay(void){
 	for(uint32_t i = 0 ; i < 500000 ; i++);

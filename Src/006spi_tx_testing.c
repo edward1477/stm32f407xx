@@ -22,6 +22,8 @@ void SPI2_GPIOInits(void) {
 
 	GPIO_Handle_t SPIPins;
 
+	//memset(&SPIPins,0,sizeof(SPIPins));
+
 	SPIPins.pGPIOx = GPIOB;
 	SPIPins.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_ALTFN;
 	SPIPins.GPIO_PinConfig.GPIO_PinAltFunMOde = 5;
@@ -38,12 +40,12 @@ void SPI2_GPIOInits(void) {
 	GPIO_Init(&SPIPins);
 
 	//MISO
-	SPIPins.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_NO_14;
-	GPIO_Init(&SPIPins);
+	//SPIPins.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_NO_14;
+	//GPIO_Init(&SPIPins);
 
 	//NSS
-	SPIPins.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_NO_12;
-	GPIO_Init(&SPIPins);
+	//SPIPins.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_NO_12;
+	//GPIO_Init(&SPIPins);
 
 }
 
@@ -51,12 +53,14 @@ void SPI2_Inits(void) {
 
 	SPI_Handle_t SPI2handle;
 
+	//memset(&SPI2handle,0,sizeof(SPI2handle));
+
 	SPI2handle.pSPIx = SPI2;
 	SPI2handle.SPIConfig.SPI_BusConfig = SPI_BUS_CONFIG_FD;
 	SPI2handle.SPIConfig.SPI_DeviceMode = SPI_DEVICE_MODE_MASTER;
 	SPI2handle.SPIConfig.SPI_SclkSpeed = SPI_SCLK_SPEED_DIV2;
 	SPI2handle.SPIConfig.SPI_DFF = SPI_DFF_8BITS;
-	SPI2handle.SPIConfig.SPI_CPOL = SPI_CPOL_LOW;
+	SPI2handle.SPIConfig.SPI_CPOL = SPI_CPOL_HIGH;
 	SPI2handle.SPIConfig.SPI_CPHA = SPI_CPHA_LOW;
 	SPI2handle.SPIConfig.SPI_SSM = SPI_SSM_EN;
 
@@ -65,7 +69,7 @@ void SPI2_Inits(void) {
 
 int main() {
 
-	char user_data[] = "Hello World";
+	char user_data[] = "He";
 
 	// This function is used to initialize the GPIO pins to behave as SPI2 pins
 	SPI2_GPIOInits();
@@ -76,14 +80,20 @@ int main() {
 	// Make NSS signal internally HIGH and avoids MODF error if using SSM to manage NSS pin
 	SPI_SSIConfig(SPI2, ENABLE);
 
-	// Enable the SPI2 peripheral (This step must be done after all Initialization is done)
-	SPI_PeripheralControl(SPI2, ENABLE);
 
-	// User application which sending out data in this example
-	SPI_SendData(SPI2, (uint8_t*)user_data, strlen(user_data));
+		// Enable the SPI2 peripheral (This step must be done after all Initialization is done)
+		SPI_PeripheralControl(SPI2, ENABLE);
 
-	// Always disable the peripheral after the communication task is completed
-	SPI_PeripheralControl(SPI2, DISABLE);
+		// User application which sending out data in this example
+		SPI_SendData(SPI2, (uint8_t*)user_data, strlen(user_data));
+
+		//Confirm SPI is not busy before closing the peripheral
+		//Just use a while loop to wait for SPI BUSY FLAG reset event
+
+		while ( SPI_GetFlagStatus(SPI2, SPI_BUSY_FLAG) );
+
+		// Always disable the peripheral after the communication task is completed
+		SPI_PeripheralControl(SPI2, DISABLE);
 
 	while(1);
 
