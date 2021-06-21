@@ -134,7 +134,7 @@ static void ds1307_i2c_pin_config() {
 
 	/*
 	 * I2C1_SCL -> PB6
-	 * I2C1_SDA -> PB7
+	 * I2C1_SDA -> PB7 or PB9
 	 */
 
 	GPIO_Handle_t i2c_sda, i2c_scl;
